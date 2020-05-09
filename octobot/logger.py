@@ -20,7 +20,8 @@ from logging.config import fileConfig
 
 import sys
 
-from octobot.constants import LOGGING_CONFIG_FILE, LOGS_FOLDER
+from octobot.constants import LOGGING_CONFIG_FILE, LOGS_FOLDER, OCTOBOT_CHANNEL
+from octobot_commons.enums import OctoBotChannelSubjects
 from octobot_commons.logging.logging_util import get_logger
 from octobot_commons.pretty_printer import (
     open_order_pretty_printer,
@@ -146,8 +147,17 @@ async def init_evaluator_chan_logger(matrix_id: str):
     )
 
 
+async def init_octobot_chan_logger(bot_id: str):
+    await get_evaluator_chan(OCTOBOT_CHANNEL, bot_id).new_consumer(
+        octobot_channel_callback,
+        priority_level=LOGGER_PRIORITY_LEVEL,
+        bot_id=bot_id,
+        subject=[OctoBotChannelSubjects.NOTIFICATION.value, OctoBotChannelSubjects.ERROR.value]
+    )
+
+
 async def ticker_callback(
-    exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, ticker
+        exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, ticker
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"TICKER : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} "
@@ -156,7 +166,7 @@ async def ticker_callback(
 
 
 async def mini_ticker_callback(
-    exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, mini_ticker
+        exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, mini_ticker
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"MINI TICKER : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} "
@@ -165,7 +175,7 @@ async def mini_ticker_callback(
 
 
 async def order_book_callback(
-    exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, asks, bids
+        exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, asks, bids
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"ORDERBOOK : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} "
@@ -174,14 +184,14 @@ async def order_book_callback(
 
 
 async def order_book_ticker_callback(
-    exchange: str,
-    exchange_id: str,
-    cryptocurrency: str,
-    symbol: str,
-    ask_quantity,
-    ask_price,
-    bid_quantity,
-    bid_price,
+        exchange: str,
+        exchange_id: str,
+        cryptocurrency: str,
+        symbol: str,
+        ask_quantity,
+        ask_price,
+        bid_quantity,
+        bid_price,
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"ORDERBOOK TICKER : EXCHANGE = {exchange} || SYMBOL = {symbol} "
@@ -191,12 +201,12 @@ async def order_book_ticker_callback(
 
 
 async def ohlcv_callback(
-    exchange: str,
-    exchange_id: str,
-    cryptocurrency: str,
-    symbol: str,
-    time_frame,
-    candle,
+        exchange: str,
+        exchange_id: str,
+        cryptocurrency: str,
+        symbol: str,
+        time_frame,
+        candle,
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"OHLCV : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} || SYMBOL = {symbol} "
@@ -205,7 +215,7 @@ async def ohlcv_callback(
 
 
 async def recent_trades_callback(
-    exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, recent_trades
+        exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, recent_trades
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"RECENT TRADES : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} "
@@ -214,7 +224,7 @@ async def recent_trades_callback(
 
 
 async def liquidations_callback(
-    exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, liquidations
+        exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, liquidations
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"LIQUIDATIONS : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} "
@@ -223,7 +233,7 @@ async def liquidations_callback(
 
 
 async def kline_callback(
-    exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, time_frame, kline
+        exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, time_frame, kline
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"KLINE : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} || SYMBOL = {symbol} "
@@ -232,7 +242,7 @@ async def kline_callback(
 
 
 async def mark_price_callback(
-    exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, mark_price
+        exchange: str, exchange_id: str, cryptocurrency: str, symbol: str, mark_price
 ):
     BOT_CHANNEL_LOGGER.info(
         f"MARK PRICE : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} "
@@ -245,12 +255,12 @@ async def balance_callback(exchange: str, exchange_id: str, balance):
 
 
 async def balance_profitability_callback(
-    exchange: str,
-    exchange_id: str,
-    profitability,
-    profitability_percent,
-    market_profitability_percent,
-    initial_portfolio_current_profitability,
+        exchange: str,
+        exchange_id: str,
+        profitability,
+        profitability_percent,
+        market_profitability_percent,
+        initial_portfolio_current_profitability,
 ):
     BOT_CHANNEL_LOGGER.info(
         f"BALANCE PROFITABILITY : EXCHANGE = {exchange} || PROFITABILITY = "
@@ -259,12 +269,12 @@ async def balance_profitability_callback(
 
 
 async def trades_callback(
-    exchange: str,
-    exchange_id: str,
-    cryptocurrency: str,
-    symbol: str,
-    trade: dict,
-    old_trade: bool,
+        exchange: str,
+        exchange_id: str,
+        cryptocurrency: str,
+        symbol: str,
+        trade: dict,
+        old_trade: bool,
 ):
     BOT_CHANNEL_LOGGER.info(
         f"TRADES : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} || SYMBOL = {symbol} "
@@ -274,14 +284,14 @@ async def trades_callback(
 
 
 async def orders_callback(
-    exchange: str,
-    exchange_id: str,
-    cryptocurrency: str,
-    symbol: str,
-    order: dict,
-    is_closed: bool,
-    is_updated: bool,
-    is_from_bot: bool,
+        exchange: str,
+        exchange_id: str,
+        cryptocurrency: str,
+        symbol: str,
+        order: dict,
+        is_closed: bool,
+        is_updated: bool,
+        is_from_bot: bool,
 ):
     order_string = f"ORDERS : EXCHANGE = {exchange} || SYMBOL = {symbol} ||"
     if is_closed:
@@ -297,15 +307,15 @@ async def orders_callback(
 
 
 async def positions_callback(
-    exchange: str,
-    exchange_id: str,
-    cryptocurrency: str,
-    symbol: str,
-    position,
-    is_closed: bool,
-    is_updated: bool,
-    is_liquidated: bool,
-    is_from_bot: bool,
+        exchange: str,
+        exchange_id: str,
+        cryptocurrency: str,
+        symbol: str,
+        position,
+        is_closed: bool,
+        is_updated: bool,
+        is_liquidated: bool,
+        is_from_bot: bool,
 ):
     BOT_CHANNEL_LOGGER.info(
         f"POSITIONS : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} "
@@ -316,13 +326,13 @@ async def positions_callback(
 
 
 async def funding_callback(
-    exchange: str,
-    exchange_id: str,
-    cryptocurrency: str,
-    symbol: str,
-    funding_rate,
-    next_funding_time,
-    timestamp,
+        exchange: str,
+        exchange_id: str,
+        cryptocurrency: str,
+        symbol: str,
+        funding_rate,
+        next_funding_time,
+        timestamp,
 ):
     BOT_CHANNEL_LOGGER.info(
         f"FUNDING : EXCHANGE = {exchange} || CRYPTOCURRENCY = {cryptocurrency} || SYMBOL = {symbol} "
@@ -332,15 +342,15 @@ async def funding_callback(
 
 
 async def matrix_callback(
-    matrix_id,
-    evaluator_name,
-    evaluator_type,
-    eval_note,
-    eval_note_type,
-    exchange_name,
-    cryptocurrency,
-    symbol,
-    time_frame,
+        matrix_id,
+        evaluator_name,
+        evaluator_type,
+        eval_note,
+        eval_note_type,
+        exchange_name,
+        cryptocurrency,
+        symbol,
+        time_frame,
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"MATRIX : EXCHANGE = {exchange_name} || "
@@ -351,18 +361,29 @@ async def matrix_callback(
 
 
 async def evaluators_callback(
-    matrix_id,
-    evaluator_name,
-    evaluator_type,
-    exchange_name,
-    cryptocurrency,
-    symbol,
-    time_frame,
-    data,
+        matrix_id,
+        evaluator_name,
+        evaluator_type,
+        exchange_name,
+        cryptocurrency,
+        symbol,
+        time_frame,
+        data,
 ):
     BOT_CHANNEL_LOGGER.debug(
         f"EVALUATORS : EXCHANGE = {exchange_name} || "
         f"EVALUATOR = {evaluator_name} || EVALUATOR_TYPE = {evaluator_type} || "
         f"CRYPTOCURRENCY = {cryptocurrency} || SYMBOL = {symbol} || TF = {time_frame} "
         f"|| DATA = {data} [MATRIX id = {matrix_id}] "
+    )
+
+
+async def octobot_channel_callback(
+        bot_id: str,
+        subject: str,
+        action: str,
+        data: dict
+):
+    BOT_CHANNEL_LOGGER.debug(
+        f"OCTOBOT_CHANNEL : SUBJECT = {subject} || ACTION = {action} || DATA = {data} "
     )

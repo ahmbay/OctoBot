@@ -14,15 +14,10 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot.channels.octobot_channel cimport OctoBotChannelProducer
 
-
-cdef class InterfaceFactory:
+cdef class EvaluatorProducer(OctoBotChannelProducer):
     cdef public object octobot
-    cdef object logger
+    cdef public object tentacles_setup_config
 
-    cdef public list interface_list
-    cdef public list notifier_list
-
-    # Cython bug with all()
-    # cdef bint _is_interface_relevant(self, object interface_class, bint backtesting_enabled)
-    # cdef bint _is_notifier_relevant(self, object notifier_class, bint backtesting_enabled)
+    cdef public str matrix_id

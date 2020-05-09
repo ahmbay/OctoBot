@@ -14,11 +14,12 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot.channels.octobot_channel cimport OctoBotChannelProducer
 
+cdef class ExchangeProducer(OctoBotChannelProducer):
+    cdef object octobot
+    cdef object backtesting
 
-cdef class EvaluatorFactory:
-    cdef public object octobot
-    cdef public object tentacles_setup_config
-    cdef object logger
+    cdef bint ignore_config
 
-    cdef public str matrix_id
+    cdef public list exchange_manager_ids

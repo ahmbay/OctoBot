@@ -14,23 +14,14 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot.channels.octobot_channel cimport OctoBotChannelProducer
 
-
-cdef class ExchangeFactory:
+cdef class InterfaceProducer(OctoBotChannelProducer):
     cdef public object octobot
-    cdef object logger
 
-    cdef public object exchange_manager
-    cdef public object trading_mode
-    cdef public object previous_trading_state_manager
+    cdef public list interface_list
+    cdef public list notifier_list
 
-    cdef bint ignore_config
-
-    cdef public dict exchanges_list
-    cdef public dict global_updaters_by_exchange
-    cdef public dict exchange_traders
-    cdef public dict exchange_trader_simulators
-    cdef public dict exchange_trading_modes
-    cdef public list exchange_manager_ids
-
-    cdef public list available_exchanges
+    # Cython bug with all()
+    # cdef bint _is_interface_relevant(self, object interface_class, bint backtesting_enabled)
+    # cdef bint _is_notifier_relevant(self, object notifier_class, bint backtesting_enabled)
