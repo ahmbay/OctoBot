@@ -71,18 +71,20 @@ class AbstractStrategyTest(AbstractBacktestingTest, ABC):
         return independent_backtesting
 
     def _update_tentacles_config(self, strategy_evaluator_class, trading_mode_class):
-        required_evaluators = strategy_evaluator_class.get_required_evaluators()
+        default_evaluators = strategy_evaluator_class.get_default_evaluators()
         to_update_config = {}
         for tentacle_class_name in get_tentacles_activation(self.tentacles_setup_config):
-            if CONFIG_WILDCARD not in required_evaluators and tentacle_class_name in required_evaluators:
+            if CONFIG_WILDCARD not in default_evaluators and tentacle_class_name in default_evaluators:
                 to_update_config[tentacle_class_name] = True
             elif get_class_from_string(tentacle_class_name, StrategyEvaluator, Strategies,
                                        evaluator_parent_inspection) is not None or \
                 get_class_from_string(tentacle_class_name, AbstractTradingMode, Mode,
                                       trading_mode_parent_inspection) is not None:
                 to_update_config[tentacle_class_name] = False
-            elif CONFIG_WILDCARD not in required_evaluators:
+            elif CONFIG_WILDCARD not in default_evaluators:
                 to_update_config[tentacle_class_name] = False
+        # Add required elements if missing
+        to_update_config.update({evaluator: True for evaluator in default_evaluators})
         to_update_config[strategy_evaluator_class.get_name()] = True
         to_update_config[trading_mode_class.get_name()] = True
-        update_activation_configuration(self.tentacles_setup_config, to_update_config, False)
+        update_activation_configuration(self.tentacles_setup_config, to_update_config, False, add_missing_elements=True)
